@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenithub - Watch Videos</title>
+    <style>
+        /* Password Screen Styles */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ff0000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .password-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        .password-container h2 {
+            color: #ff0000;
+            margin-bottom: 1.5rem;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .password-input:focus {
+            border-color: #ff0000;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+        }
+        
+        .submit-btn {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            background-color: #e60000;
+            transform: translateY(-2px);
+        }
+        
+        .error-message {
+            color: #ff0000;
+            margin-top: 1rem;
+            font-weight: bold;
+            display: none;
+        }
+        
+        /* Main Content (hidden by default) */
+        .main-content {
+            display: none;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Rest of your existing CSS styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #ff0000;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: white;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .header-icons i {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .header-icons i:hover {
+            transform: scale(1.1);
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-bar {
+            display: flex;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #ff0000;
+        }
+
+        .search-btn {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .search-btn:hover {
+            background-color: #e60000;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transform: translateY(0);
+            position: relative;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .thumbnail {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            background-color: #eee;
+            overflow: hidden;
+        }
+
+        .thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-info h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Download button styles */
+        .download-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .download-btn {
+            opacity: 1;
+        }
+
+        .download-btn:hover {
+            background-color: #ff0000;
+            transform: scale(1.1);
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination-btn {
+            background-color: white;
+            border: 1px solid #ddd;
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background-color: #ff0000;
+            color: white;
+            border-color: #ff0000;
+        }
+
+        .pagination-btn.active {
+            background-color: #ff0000;
+            color: white;
+            border-color: #ff0000;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .video-player {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-player.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .video-player-content {
+            width: 80%;
+            max-width: 1000px;
+            position: relative;
+        }
+
+        .video-player video {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #ff0000;
+        }
+
+        /* Download button in video player */
+        .player-download-btn {
+            position: absolute;
+            top: -40px;
+            right: 40px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .player-download-btn:hover {
+            color: #ff0000;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #333;
+            color: #fff;
+            margin-top: 3rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .video-player-content {
+                width: 95%;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .search-input {
+                border-radius: 5px;
+                margin-bottom: 0.5rem;
+            }
+
+            .search-btn {
+                border-radius: 5px;
+                padding: 12px;
+            }
+
+            .download-btn {
+                opacity: 1; /* Always show on mobile */
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Password Screen -->
+    <div class="password-screen" id="passwordScreen">
+        <div class="password-container">
+            <h2>Enter Password to Access</h2>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter password">
+            <button class="submit-btn" id="submitPassword">Submit</button>
+            <p class="error-message" id="errorMessage">Incorrect password. Please try again.</p>
+        </div>
+    </div>
+
+    <!-- Main Content (hidden until password is entered) -->
+    <div class="main-content" id="mainContent">
+        <header>
+            <div class="logo">Zen<span>Video</span></div>
+            <div class="header-icons">
+                <i class="fas fa-search" id="mobileSearchToggle"></i>
+                <i class="fas fa-play"></i>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h1>Watch Amazing Videos</h1>
+                <p>Discover and enjoy curated video content without the hassle of accounts or logins.</p>
+            </section>
+
+            <!-- Search Bar -->
+            <div class="search-container" id="searchContainer">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search videos...">
+                    <button class="search-btn" id="searchBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <section class="video-grid" id="videoGrid">
+                <!-- Videos will be loaded here dynamically -->
+            </section>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <button class="pagination-btn" id="prevPage" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div id="pageNumbers"></div>
+                <button class="pagination-btn" id="nextPage">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </main>
+
+        <div class="video-player" id="videoPlayer">
+            <div class="video-player-content">
+                <span class="close-btn" id="closePlayer">
+                    <i class="fas fa-times"></i>
+                </span>
+                <span class="player-download-btn" id="playerDownloadBtn">
+                    <i class="fas fa-download"></i>
+                </span>
+                <video controls id="mainVideoPlayer">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Zenithub. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Password Protection
+        const passwordScreen = document.getElementById('passwordScreen');
+        const mainContent = document.getElementById('mainContent');
+        const passwordInput = document.getElementById('passwordInput');
+        const submitPassword = document.getElementById('submitPassword');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Correct password
+        const CORRECT_PASSWORD = "Zenithera2025";
+        
+        // Handle password submission
+        submitPassword.addEventListener('click', () => {
+            if(passwordInput.value === CORRECT_PASSWORD) {
+                // Correct password
+                passwordScreen.style.display = 'none';
+                mainContent.style.display = 'block';
+                loadVideos(); // Load videos after password is entered
+            } else {
+                // Wrong password
+                errorMessage.style.display = 'block';
+                passwordInput.style.borderColor = '#ff0000';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+        
+        // Allow pressing Enter to submit password
+        passwordInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') {
+                submitPassword.click();
+            }
+        });
+
+        // Video player functionality
+        const videoPlayer = document.getElementById('videoPlayer');
+        const mainVideoPlayer = document.getElementById('mainVideoPlayer');
+        const closePlayer = document.getElementById('closePlayer');
+        const playerDownloadBtn = document.getElementById('playerDownloadBtn');
+        let currentVideoUrl = '';
+        let currentVideoTitle = '';
+        
+        function playVideo(videoSrc, videoTitle) {
+            currentVideoUrl = videoSrc;
+            currentVideoTitle = videoTitle || 'video';
+            mainVideoPlayer.src = videoSrc;
+            videoPlayer.classList.add('active');
+            mainVideoPlayer.play();
+        }
+        
+        closePlayer.addEventListener('click', () => {
+            videoPlayer.classList.remove('active');
+            mainVideoPlayer.pause();
+        });
+        
+        // Close player when clicking outside
+        videoPlayer.addEventListener('click', (e) => {
+            if (e.target === videoPlayer) {
+                videoPlayer.classList.remove('active');
+                mainVideoPlayer.pause();
+            }
+        });
+
+        // Video data
+        const videos = [
+            {
+                title: "First Youtube Videos",
+                views: "366M views",
+                time: "20 years ago",
+                thumbnail: "https://files.catbox.moe/glmh9z.PNG",
+                video: "https://files.catbox.moe/led5gk.mp4"
+            },
+            {
+                title: "How to Make Perfect Coffee",
+                views: "1,567 views",
+                time: "1 week ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4"
+            },
+            {
+                title: "10 Minute Morning Workout",
+                views: "4,892 views",
+                time: "2 days ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4"
+            },
+            {
+                title: "Cooking Pasta Like a Chef",
+                views: "3,210 views",
+                time: "5 days ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_1mb.mp4"
+            },
+            {
+                title: "Travel Guide: Bali Indonesia",
+                views: "7,543 views",
+                time: "2 weeks ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_2mb.mp4"
+            },
+            {
+                title: "DIY Home Decoration Ideas",
+                views: "1,234 views",
+                time: "1 day ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/360/big_buck_bunny_360p_1mb.mp4"
+            },
+            {
+                title: "Photography Tips for Beginners",
+                views: "5,678 views",
+                time: "4 days ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
+            },
+            {
+                title: "Yoga for Stress Relief",
+                views: "3,456 views",
+                time: "1 week ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4"
+            },
+            {
+                title: "Budget Travel Tips",
+                views: "8,901 views",
+                time: "3 weeks ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4"
+            },
+            {
+                title: "Easy Guitar Lessons for Beginners",
+                views: "2,345 views",
+                time: "5 days ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_1mb.mp4"
+            },
+            {
+                title: "Healthy Breakfast Recipes",
+                views: "6,789 views",
+                time: "1 week ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_2mb.mp4"
+            },
+            {
+                title: "Productivity Hacks for Work",
+                views: "4,567 views",
+                time: "2 days ago",
+                thumbnail: "https://via.placeholder.com/300x169",
+                video: "https://sample-videos.com/video123/mp4/360/big_buck_bunny_360p_1mb.mp4"
+            }
+        ];
+
+        // Pagination variables
+        const videosPerPage = 6;
+        let currentPage = 1;
+        let filteredVideos = [...videos];
+
+        // DOM elements
+        const videoGrid = document.getElementById('videoGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const pageNumbersContainer = document.getElementById('pageNumbers');
+        const mobileSearchToggle = document.getElementById('mobileSearchToggle');
+        const searchContainer = document.getElementById('searchContainer');
+
+        // Initialize the page
+        function loadVideos() {
+            renderVideos();
+            renderPagination();
+        }
+
+        // Render videos based on current page and search term
+        function renderVideos() {
+            videoGrid.innerHTML = '';
+            
+            const startIndex = (currentPage - 1) * videosPerPage;
+            const endIndex = startIndex + videosPerPage;
+            const videosToDisplay = filteredVideos.slice(startIndex, endIndex);
+            
+            videosToDisplay.forEach(video => {
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.setAttribute('data-video', video.video);
+                
+                videoCard.innerHTML = `
+                    <div class="thumbnail">
+                        <img src="${video.thumbnail}" alt="${video.title}">
+                    </div>
+                    <div class="video-info">
+                        <h3>${video.title}</h3>
+                        <p>${video.views} • ${video.time}</p>
+                    </div>
+                    <button class="download-btn" data-video="${video.video}" data-title="${video.title}">
+                        <i class="fas fa-download"></i>
+                    </button>
+                `;
+                
+                videoCard.addEventListener('click', (e) => {
+                    // Don't play video if download button was clicked
+                    if (!e.target.closest('.download-btn')) {
+                        playVideo(video.video, video.title);
+                    }
+                });
+                
+                videoGrid.appendChild(videoCard);
+            });
+
+            // Add event listeners to download buttons
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const videoUrl = btn.getAttribute('data-video');
+                    const videoTitle = btn.getAttribute('data-title') || 'video';
+                    downloadVideo(videoUrl, videoTitle);
+                });
+            });
+        }
+
+        // Download video function
+        function downloadVideo(url, title) {
+            // Create a temporary anchor element
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.mp4';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Fallback for browsers that don't support download attribute
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, 100);
+        }
+
+        // Player download button
+        playerDownloadBtn.addEventListener('click', () => {
+            if (currentVideoUrl) {
+                downloadVideo(currentVideoUrl, currentVideoTitle);
+            }
+        });
+
+        // Render pagination controls
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredVideos.length / videosPerPage);
+            pageNumbersContainer.innerHTML = '';
+            
+            // Previous button state
+            prevPageBtn.disabled = currentPage === 1;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    renderVideos();
+                    renderPagination();
+                });
+                pageNumbersContainer.appendChild(pageBtn);
+            }
+            
+            // Next button state
+            nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+        }
+
+        // Search functionality
+        function searchVideos() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            if (searchTerm.trim() === '') {
+                filteredVideos = [...videos];
+            } else {
+                filteredVideos = videos.filter(video => 
+                    video.title.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            currentPage = 1;
+            renderVideos();
+            renderPagination();
+        }
+
+        // Event listeners
+        searchBtn.addEventListener('click', searchVideos);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchVideos();
+            }
+        });
+        
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderVideos();
+                renderPagination();
+            }
+        });
+        
+        nextPageBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredVideos.length / videosPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderVideos();
+                renderPagination();
+            }
+        });
+
+        // Mobile search toggle
+        mobileSearchToggle.addEventListener('click', () => {
+            searchContainer.style.display = searchContainer.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        // Initialize mobile search visibility
+        function initMobileSearch() {
+            if (window.innerWidth <= 768) {
+                searchContainer.style.display = 'none';
+            } else {
+                searchContainer.style.display = 'flex';
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', initMobileSearch);
+
+        // Initialize
+        initMobileSearch();
+    </script>
+</body>
+</html>
